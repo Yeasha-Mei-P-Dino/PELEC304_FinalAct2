@@ -25,8 +25,11 @@ SECRET_KEY = 'django-insecure-@===kay$$@+^=fu#y720o034avv3qcd^sc(46lt!ui#1@4siol
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    'yeasha.pythonanywhere.com',
+]
 
 # Application definition
 
@@ -52,6 +55,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'ol_enrollment_system.urls'
+STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
