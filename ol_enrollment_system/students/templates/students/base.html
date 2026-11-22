@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}OL Enrollment System{% endblock %}</title>
+  <style>
+    :root {
+      --dark-blue: #0f2537;
+      --dark-blue-hover: #1b3d59;
+      --cream: #faf6f0;
+      --cream-card: #fffdf9;
+      --cream-accent: #f1e9dc;
+      --gray-border: #d1d5db;
+      --gray-soft: #e5e7eb;
+      --gray-text: #4b5563;
+      --gray-muted: #6b7280;
+      --text-dark: #111827;
+      --success-bg: #e6f4ea;
+      --success-text: #137333;
+      --error-bg: #fce8e6;
+      --error-text: #c5221f;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--cream);
+      color: var(--text-dark);
+      line-height: 1.5;
+    }
+
+    .topbar {
+      background-color: var(--dark-blue);
+      color: var(--cream);
+      padding: 0.95rem 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      border-bottom: 4px solid var(--gray-border);
+    }
+
+    .brand { font-size: 1.2rem; font-weight: 700; letter-spacing: 0.3px; }
+
+    .nav-links { display: flex; gap: 0.6rem; align-items: center; }
+
+    .nav-links a {
+      color: var(--cream);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 0.45rem 0.85rem;
+      border-radius: 6px;
+      border: 1px solid rgba(250, 246, 240, 0.25);
+    }
+
+    .nav-links a.active,
+    .nav-links a:hover {
+      background-color: var(--cream);
+      color: var(--dark-blue);
+    }
+
+    .alerts-wrap { max-width: 1320px; margin: 1rem auto 0; padding: 0 1.5rem; }
+
+    .alert {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      border: 1px solid var(--gray-border);
+    }
+
+    .alert.success { background-color: var(--success-bg); color: var(--success-text); }
+    .alert.error { background-color: var(--error-bg); color: var(--error-text); }
+
+    .container { max-width: 1320px; margin: 1.25rem auto 2.5rem; padding: 0 1.5rem; }
+
+    .btn-dark {
+      background-color: var(--dark-blue);
+      color: var(--cream);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-dark:hover { background-color: var(--dark-blue-hover); }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">OL Enrollment System</div>
+    <nav class="nav-links">
+      <a href="{% url 'student_profiles' %}" class="{% if active_page == 'profiles' %}active{% endif %}">
+        Student Profiles
+      </a>
+      <a href="{% url 'enroll_student' %}" class="{% if active_page == 'enroll' %}active{% endif %}">
+        + Enroll Student
+      </a>
+      <a href="{% url 'admin:index' %}">Admin</a>
+    </nav>
+  </header>
+
+  {% if messages %}
+    <div class="alerts-wrap">
+      {% for message in messages %}
+        <div class="alert {{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="container">
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>

@@ -1,0 +1,332 @@
+{% extends "students/base.html" %}
+
+{% block title %}Student Profiles | OL Enrollment System{% endblock %}
+
+{% block extra_css %}
+<style>
+  .split-grid {
+    display: grid;
+    grid-template-columns: 330px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .split-grid { grid-template-columns: 1fr; }
+  }
+
+  .sidebar {
+    background-color: var(--cream-card);
+    border: 1px solid var(--gray-border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .sidebar-top { background-color: var(--dark-blue); color: var(--cream); padding: 1rem 1.2rem; }
+  .sidebar-top h2 { font-size: 1rem; margin-bottom: 0.6rem; }
+
+  .search-form { display: flex; gap: 0.4rem; }
+
+  .search-form input {
+    flex: 1;
+    padding: 0.42rem 0.65rem;
+    border-radius: 6px;
+    border: 1px solid var(--gray-border);
+    background-color: var(--cream);
+    font-size: 0.85rem;
+  }
+
+  .search-form button {
+    background-color: var(--cream-accent);
+    color: var(--dark-blue);
+    border: none;
+    border-radius: 6px;
+    padding: 0.42rem 0.75rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+
+  .student-list { list-style: none; max-height: 620px; overflow-y: auto; }
+
+  .student-row a {
+    display: block;
+    padding: 0.85rem 1.2rem;
+    text-decoration: none;
+    color: var(--text-dark);
+    border-bottom: 1px solid var(--gray-soft);
+  }
+
+  .student-row a:hover { background-color: var(--cream-accent); }
+  .student-row.active a { background-color: var(--dark-blue); color: var(--cream); }
+
+  .student-name { font-weight: 600; font-size: 0.95rem; display: block; }
+
+  .student-sub {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--gray-muted);
+    margin-top: 0.2rem;
+  }
+
+  .student-row.active .student-sub { color: var(--cream-accent); }
+
+  .detail-card {
+    background-color: var(--cream-card);
+    border: 1px solid var(--gray-border);
+    border-radius: 12px;
+    padding: 1.6rem;
+  }
+
+  .hero-box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.4rem;
+    align-items: center;
+    background-color: var(--cream);
+    border: 1px solid var(--gray-border);
+    border-radius: 10px;
+    padding: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .photo-frame {
+    width: 116px;
+    height: 116px;
+    border-radius: 10px;
+    border: 2px solid var(--dark-blue);
+    background-color: var(--gray-soft);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .photo-frame img { width: 100%; height: 100%; object-fit: cover; }
+  .photo-empty { font-size: 0.78rem; color: var(--gray-text); text-align: center; padding: 0.4rem; }
+
+  .hero-info { flex: 1; min-width: 220px; }
+  .hero-info h2 { color: var(--dark-blue); font-size: 1.45rem; margin-bottom: 0.25rem; }
+  .hero-meta { color: var(--gray-text); font-size: 0.88rem; margin-bottom: 0.55rem; }
+
+  .pill {
+    display: inline-block;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    background-color: var(--dark-blue);
+    color: var(--cream);
+  }
+
+  .pill-gray {
+    background-color: var(--gray-soft);
+    color: var(--text-dark);
+    border: 1px solid var(--gray-border);
+  }
+
+  .upload-panel {
+    margin-top: 0.75rem;
+    background-color: var(--cream-accent);
+    border: 1px dashed var(--dark-blue);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+  }
+
+  .upload-panel label {
+    display: block;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--dark-blue);
+    margin-bottom: 0.4rem;
+  }
+
+  .upload-row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+
+  .locked-badge {
+    margin-top: 0.65rem;
+    display: inline-block;
+    background-color: var(--gray-soft);
+    color: var(--gray-text);
+    border: 1px solid var(--gray-border);
+    padding: 0.45rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.82rem;
+  }
+
+  .block-section { margin-bottom: 1.4rem; }
+
+  .block-header {
+    background-color: var(--dark-blue);
+    color: var(--cream);
+    padding: 0.5rem 0.95rem;
+    border-radius: 6px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    margin-bottom: 0.85rem;
+  }
+
+  .field-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 0.8rem;
+  }
+
+  .field-box {
+    background-color: var(--cream);
+    border: 1px solid var(--gray-border);
+    border-radius: 8px;
+    padding: 0.7rem 0.9rem;
+  }
+
+  .field-label {
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--gray-muted);
+    font-weight: 700;
+    margin-bottom: 0.2rem;
+  }
+
+  .field-val { font-size: 0.92rem; font-weight: 500; color: var(--text-dark); word-break: break-word; }
+  .empty-msg { text-align: center; padding: 2.5rem 1rem; color: var(--gray-text); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="split-grid">
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <h2>Students ({{ students|length }})</h2>
+      <form method="get" action="{% url 'student_profiles' %}" class="search-form">
+        <input
+          type="text"
+          name="q"
+          value="{{ search_query }}"
+          placeholder="Search name, ID, program..."
+        />
+        <button type="submit">Search</button>
+      </form>
+    </div>
+
+    <ul class="student-list">
+      {% for student in students %}
+        <li class="student-row {% if selected_student and student.pk == selected_student.pk %}active{% endif %}">
+          <a href="{% url 'student_detail' student.pk %}">
+            <span class="student-name">{{ student.full_name }}</span>
+            <span class="student-sub">
+              <span>{{ student.student_id }}</span>
+              <span>{{ student.enrollment_status }}</span>
+            </span>
+          </a>
+        </li>
+      {% empty %}
+        <li class="empty-msg">No matching students.</li>
+      {% endfor %}
+    </ul>
+  </aside>
+
+  <main class="detail-card">
+    {% if selected_student %}
+      <div class="hero-box">
+        <div class="photo-frame">
+          {% if selected_student.profile_pic %}
+            <img src="{{ selected_student.profile_pic.url }}" alt="{{ selected_student.full_name }}" />
+          {% else %}
+            <div class="photo-empty">No Photo Uploaded</div>
+          {% endif %}
+        </div>
+
+        <div class="hero-info">
+          <h2>{{ selected_student.full_name }}</h2>
+          <p class="hero-meta">
+            <strong>ID:</strong> {{ selected_student.student_id }} &bull;
+            <strong>Program:</strong> {{ selected_student.program }} ({{ selected_student.year_level }})
+          </p>
+          <span class="pill">{{ selected_student.enrollment_status }}</span>
+          <span class="pill pill-gray">
+            {% if selected_student.has_uploaded_pic %}One-Time Photo Locked{% else %}One-Time Upload Ready{% endif %}
+          </span>
+
+          {% if not selected_student.has_uploaded_pic %}
+            <div class="upload-panel">
+              <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <label for="id_profile_pic">One-Time Profile Picture Upload (permanent once saved)</label>
+                <div class="upload-row">
+                  {{ form.profile_pic }}
+                  <button type="submit" class="btn-dark">Upload Photo</button>
+                </div>
+              </form>
+            </div>
+          {% else %}
+            <div class="locked-badge">
+              Uploaded{% if selected_student.profile_pic_uploaded_at %} on {{ selected_student.profile_pic_uploaded_at|date:"M d, Y H:i" }}{% endif %}. Re-upload disabled.
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="block-section">
+        <div class="block-header">Personal Information</div>
+        <div class="field-grid">
+          <div class="field-box">
+            <div class="field-label">Full Name</div>
+            <div class="field-val">{{ selected_student.first_name }} {{ selected_student.middle_name }} {{ selected_student.last_name }}</div>
+          </div>
+          <div class="field-box">
+            <div class="field-label">Date of Birth</div>
+            <div class="field-val">{{ selected_student.date_of_birth|date:"F d, Y" }}</div>
+          </div>
+          <div class="field-box">
+            <div class="field-label">Gender</div>
+            <div class="field-val">{{ selected_student.gender }}</div>
+          </div>
+          <div class="field-box">
+            <div class="field-label">Email</div>
+            <div class="field-val">{{ selected_student.email }}</div>
+          </div>
+          <div class="field-box">
+            <div class="field-label">Phone Number</div>
+            <div class="field-val">{{ selected_student.phone_number }}</div>
+          </div>
+          <div class="field-box">
+            <div class="field-label">Address</div>
+            <div class="field-val">{{ selected_student.address }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="block-section">
+        <div class="block-header">Background Information</div>
+        <div class="field-grid">
+          <div class="field-box">
+            <div class="field-label">Previous School</div>
+            <div class="field-val">{{ selected_student.previous_school }}</div>
+          </div>
+          <div class="field-box">
+            <div class="field-label">Graduation Year</div>
+            <div class="field-val">{{ selected_student.graduation_year }}</div>
+          </div>
+          <div class="field-box">
+            <div class="field-label">Guardian Name</div>
+            <div class="field-val">{{ selected_student.guardian_name }} ({{ selected_student.guardian_relationship }})</div>
+          </div>
+          <div class="field-box">
+            <div class="field-label">Guardian Contact</div>
+            <div class="field-val">{{ selected_student.guardian_contact }}</div>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div class="empty-msg">
+        <h3>No Student Records Found</h3>
+        <p style="margin: 0.5rem 0 1rem;">Add a student record or run the sample seed command to get started.</p>
+        <a href="{% url 'enroll_student' %}" class="btn-dark">+ Enroll First Student</a>
+      </div>
+    {% endif %}
+  </main>
+</div>
+{% endblock %}
